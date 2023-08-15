@@ -1,7 +1,8 @@
 import React from "react";
 import { Button, Form, Input } from 'antd';
-import {$login} from '../../api/adminApi'
-import './Login.css'
+import {$login} from '../../api/adminApi';
+import CommonNotification from "../../components/commonNotification/commonNotification";
+import './Login.css';
 
 
 export default function Login(){
@@ -77,6 +78,7 @@ export default function Login(){
                 </Form.Item>
             </Form>
             </div>
+            <CommonNotification></CommonNotification>
         </div>
     )
 }
