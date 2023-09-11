@@ -1,7 +1,7 @@
 import {Menu, MenuProps} from "antd";
 import React, {useState} from "react";
 import {DesktopOutlined, FileOutlined, PieChartOutlined, TeamOutlined, UserOutlined} from "@ant-design/icons";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useLocation} from "react-router-dom";
 
 type MenuItem = Required<MenuProps>['items'][number];
 //登录请求到数据周，就可以跟items这个数组进行匹配
@@ -22,12 +22,12 @@ const items: MenuItem[] = [
             {
                 label: '栏目301',
                 key: '/page3/page301'
-            },{
+            }, {
                 label: '栏目302',
                 key: '/page3/page302'
-            },{
+            }, {
                 label: '栏目302',
-                key: '/page3/page302'
+                key: '/page3/page303'
             }
         ]
     }, {
@@ -51,12 +51,34 @@ const items: MenuItem[] = [
 ]
 const Comp: React.FC = () => {
     const navigateTo = useNavigate();
+    const currentRoute = useLocation();
     const menuClick = (e: { key: string }) => {
         console.log("点击了菜单", e.key)
         //点击跳转到对应路由  编程式导航跳转
         navigateTo(e.key)
     }
-    const [openKeys, setOpenKeys] = useState(['']);
+    // 拿着currentRoute.pathname跟items数组的每一项的children的key值进行对比，如果找到了相等了，就要他上一级的key
+    //这个key给到openKeys数组的元素，作为初始值
+    let firstOpenKey: string = ""
+
+    //在这里进行对比
+    function findKey(obj: { key: string }) {
+        return obj.key === currentRoute.pathname
+    }
+
+    //多对比的是多个children
+    for (const element of items) {
+        //判断是否找到
+        if (element!['children'] && element!['children'].length > 0 && element!['children'].find(findKey)) {
+            firstOpenKey = element!.key as string;
+            break;
+        }
+
+    }
+
+
+    //设置展开项的初始值
+    const [openKeys, setOpenKeys] = useState([firstOpenKey]);
     const handleOpenChange = (keys: string[]) => {
         console.log(keys)
         //把这个数组修改成最后一项
@@ -65,7 +87,7 @@ const Comp: React.FC = () => {
     return (
         <Menu
             theme="dark"
-            defaultSelectedKeys={['1']}
+            defaultSelectedKeys={[currentRoute.pathname]}
             mode="inline"
             items={items}
             onClick={menuClick}
